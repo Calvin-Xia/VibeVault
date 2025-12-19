@@ -33,11 +33,24 @@ export async function renameTag(id: string, name: string) {
   if (!name.trim()) {
     throw new Error('Tag name is required')
   }
-  
-  return prisma.tag.update({
+
+  const tag = await prisma.tag.findFirst({
     where: {
       id,
       userId: session.user.id
+    },
+    select: {
+      id: true
+    }
+  })
+
+  if (!tag) {
+    throw new Error('Unauthorized')
+  }
+  
+  return prisma.tag.update({
+    where: {
+      id: tag.id
     },
     data: {
       name: name.trim()
@@ -51,11 +64,24 @@ export async function deleteTag(id: string) {
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
-  
-  return prisma.tag.delete({
+
+  const tag = await prisma.tag.findFirst({
     where: {
       id,
       userId: session.user.id
+    },
+    select: {
+      id: true
+    }
+  })
+
+  if (!tag) {
+    throw new Error('Unauthorized')
+  }
+  
+  return prisma.tag.delete({
+    where: {
+      id: tag.id
     }
   })
 }
