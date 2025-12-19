@@ -1,0 +1,78 @@
+'use server'
+
+import { auth } from '@/lib/auth'
+import { prisma } from 'db'
+
+export async function addCollection(name: string, color?: string) {
+  const session = await auth()
+  
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+  
+  if (!name.trim()) {
+    throw new Error('Collection name is required')
+  }
+  
+  return prisma.collection.create({
+    data: {
+      userId: session.user.id,
+      name: name.trim(),
+      color
+    }
+  })
+}
+
+export async function renameCollection(id: string, name: string) {
+  const session = await auth()
+  
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+  
+  if (!name.trim()) {
+    throw new Error('Collection name is required')
+  }
+  
+  return prisma.collection.update({
+    where: {
+      id,
+      userId: session.user.id
+    },
+    data: {
+      name: name.trim()
+    }
+  })
+}
+
+export async function deleteCollection(id: string) {
+  const session = await auth()
+  
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+  
+  return prisma.collection.delete({
+    where: {
+      id,
+      userId: session.user.id
+    }
+  })
+}
+
+export async function listCollections() {
+  const session = await auth()
+  
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+  
+  return prisma.collection.findMany({
+    where: {
+      userId: session.user.id
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+}

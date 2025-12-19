@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  links        Link[]
+  tags         Tag[]
+  collections  Collection[]
+  jobs         Job[]
+}
+
+model Collection {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links Link[]
+
+  @@unique([userId, name])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  color     String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links LinkTag[]
+
+  @@unique([userId, name])
+}
+
+model Link {
+  id              String   @id @default(cuid())
+  userId          String
+  url             String
+  normalizedUrl   String
+  domain          String
+  title           String?
+  description     String?
+  note            String?
+  ogImage         String?
+  favicon         String?
+  siteName        String?
+  publishedTime   DateTime?
+  status          String    @default("INBOX")
+  favorite        Boolean   @default(false)
+  collectionId    String?
+  metadataStatus  String    @default("PENDING")
+  metadataError   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  lastVisitedAt   DateTime?
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collection  Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  tags        LinkTag[]
+  visits      LinkVisit[]
+
+  @@unique([userId, normalizedUrl])
+}
+
+model LinkTag {
+  linkId String
+  tagId  String
+  link   Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([linkId, tagId])
+}
+
+model LinkVisit {
+  id         String   @id @default(cuid())
+  linkId     String
+  visitedAt  DateTime @default(now())
+
+  // Relations
+  link Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
+}
+
+model Job {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  payload   String
+  status    String   @default("QUEUED")
+  error     String?
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
