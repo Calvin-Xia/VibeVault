@@ -134,7 +134,20 @@ async function processJob(job: any) {
     
     // Also update link metadata status to FAILED
     if (job.type === 'FETCH_METADATA') {
-      const { linkId } = job.payload
+      let linkId: string | number | undefined
+
+      try {
+        ({ linkId } = JSON.parse(job.payload))
+      } catch (parseError) {
+        console.error(`Job ${job.id} failed to parse payload for link update:`, parseError)
+        return
+      }
+
+      if (!linkId) {
+        console.error(`Job ${job.id} missing linkId in payload for link update`)
+        return
+      }
+
       await prisma.link.update({
         where: { id: linkId },
         data: {
