@@ -182,7 +182,7 @@ export async function importData(jsonData: string) {
           const mappedTagIds = link.tagIds.map(tagId => tagMap.get(tagId)).filter(Boolean) as string[]
           
           // Create new link
-          await tx.link.create({
+          const createdLink = await tx.link.create({
             data: {
               userId: session.user!.id,
               url: link.url,
@@ -198,13 +198,21 @@ export async function importData(jsonData: string) {
               status: link.status,
               favorite: link.favorite,
               collectionId: mappedCollectionId,
-              tags: mappedTagIds.length > 0 ? { connect: mappedTagIds.map(id => ({ id })) } : undefined,
               createdAt: new Date(link.createdAt),
               updatedAt: new Date(link.updatedAt),
               lastVisitedAt: link.lastVisitedAt ? new Date(link.lastVisitedAt) : null,
               metadataStatus: 'PENDING' // Set to PENDING to trigger re-fetch
             }
           })
+
+          if (mappedTagIds.length > 0) {
+            await tx.linkTag.createMany({
+              data: mappedTagIds.map(tagId => ({
+                linkId: createdLink.id,
+                tagId
+              }))
+            })
+          }
           
           results.importedLinks++
         }
