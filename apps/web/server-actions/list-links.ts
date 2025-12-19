@@ -48,7 +48,7 @@ export async function listLinks({
   if (tagIds && tagIds.length > 0) {
     where.tags = {
       some: {
-        id: {
+        tagId: {
           in: tagIds
         }
       }
