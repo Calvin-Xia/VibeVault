@@ -1,4 +1,4 @@
-// File: C:\Users\Calvin-Xia\VibeVault\apps\web\app\page.tsx
+// File: C:\Users\Calvin-Xia\Documents\GitHub\VibeVault\apps\web\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
