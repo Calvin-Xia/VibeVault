@@ -63,7 +63,7 @@ export async function exportData() {
         status: link.status,
         favorite: link.favorite,
         collectionId: link.collectionId,
-        tagIds: link.tags.map(tag => tag.id),
+        tagIds: link.tags.map(tag => tag.tagId),
         createdAt: link.createdAt.toISOString(),
         updatedAt: link.updatedAt.toISOString(),
         lastVisitedAt: link.lastVisitedAt?.toISOString()
