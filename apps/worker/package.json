@@ -1,0 +1,23 @@
+{
+  "name": "worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "lint": "eslint src --ext .ts",
+    "build": "tsup src/index.ts --format esm,cjs --dts --out-dir dist"
+  },
+  "dependencies": {
+    "@vibevault/db": "workspace:*",
+    "bullmq": "^5.11.0",
+    "cheerio": "^1.0.0",
+    "undici": "^6.13.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "tsup": "^8.0.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.5",
+    "tsx": "^4.7.0"
+  }
+}
